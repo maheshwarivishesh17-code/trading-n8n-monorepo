@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import mongoose from "mongoose";
 import {
   CreateWorkflowSchema,
@@ -20,6 +21,14 @@ mongoose.connect(process.env.MONGO_URL!);
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 const app = express();
+const port = 3000;
+
+app.use(cors({
+    origin: 'http://localhost:5173', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
@@ -33,9 +42,13 @@ app.post("/signup", async (req, res) => {
       username: data.username,
       password: data.password,
     });
+    const token = jwt.sign({
+      id: user._id,
+    }, JWT_SECRET);
 
     res.json({
-      id: user._id,
+      message: "User created successfully",
+      token: token,
     });
   } catch (e) {
     return res.status(411).json({ message: "username already exists" });

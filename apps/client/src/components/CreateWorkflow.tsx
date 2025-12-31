@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
@@ -33,7 +35,8 @@ interface Nodetype {
     position:{x:number,y:number},
 }
 export type NodeMetadata= Tradingmetadata | PriceTriggerMetadata | TimerNodeMetadata ;
-interface Edge{ id:string,
+interface Edge{
+  style: { stroke: string; strokeWidth: number; }; id:string,
       source:string,
       target:string,
 }
@@ -175,7 +178,7 @@ export function CreateWorkflow(){
           <button className="md:hidden p-2" onClick={() => setSidebarCollapsed(s => !s)} aria-label="toggle sidebar">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
-          <Link to="/workflows" className="text-sm text-white/80 mr-2">← Back</Link>
+          <Link to="/dashboard" className="text-sm text-black/80 mr-2">← Back</Link>
           <div>
             <h1 className="text-lg font-semibold">Workflow Builder</h1>
             <span className="text-sm text-muted-foreground">Design automations visually</span>
@@ -221,7 +224,8 @@ export function CreateWorkflow(){
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
               <div className="text-center opacity-80">
                 <svg width="64" height="64" viewBox="0 0 24 24" fill="none" className="mx-auto mb-3"><path d="M12 2v6" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M6 8l6 6 6-6" stroke="#3b82f6" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                <div className="text-xl font-medium">Drag Trigger to start</div>
+                <div className="text-xl font-medium">Click Trigger to start</div>
+                <a href="/Sheetopen" className="text-blue-500 hover:text-blue-700">Create Trigger</a>
                 <div className="text-sm text-muted-foreground mt-2">Use the Actions panel to add nodes</div>
               </div>
             </div>
@@ -258,7 +262,7 @@ export function CreateWorkflow(){
               onConnectEnd={onConnectEnd}
               fitView
             >
-              <MiniMap maskColor="#111827" nodeStrokeColor={(n:any) => '#111827'} nodeColor={(n:any) => '#0f172a'} />
+              <MiniMap maskColor="#111827" nodeStrokeColor={(_n:any) => '#060608ff'} nodeColor={(_n:any) => '#0f172a'} />
               <Controls />
               <Background />
             </ReactFlow>
