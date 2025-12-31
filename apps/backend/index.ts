@@ -79,7 +79,7 @@ app.post("/workflow", authMiddleware, async (req, res) => {
   }
   try {
     const workflow = await WorkflowModel.create({
-      Userid: userid,
+      userid: userid,
       nodes: data.nodes,
       edges: data.edges,
     });
@@ -110,13 +110,18 @@ app.put("/workflow/:workflowId", authMiddleware, async (req, res) => {
   }
 });
 
-app.get("/workflow/workflowId", authMiddleware, async (req, res) => {
+app.get("/workflow/:workflowId", authMiddleware, async (req, res) => {
   const workflow = await WorkflowModel.findById(req.params.workflowId);
-  if (!workflow) {
+  if (!workflow || workflow.userid.toString() !== req.userid) {
     return res.status(404).json({ message: "Workflow not found" });
     return;
   }
   res.json(workflow);
+});
+
+app.get("/workflows", authMiddleware, async (req, res) => {
+  const workflows = await WorkflowModel.find({ userid: req.userid });
+  res.json(workflows);
 });
 
 app.get(
@@ -124,8 +129,8 @@ app.get(
   authMiddleware,
   async (req, res) => {
     const executions = await ExecutionModel.find({
-      workflowId: req.params.workflowId,
-    });
+      workflowId: req.params.workflowId, userId: req.userid
+    }); 
     res.json(executions);
   }
 );
