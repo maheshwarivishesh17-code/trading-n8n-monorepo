@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import mongoose from "mongoose";
 import {
   CreateWorkflowSchema,
@@ -20,6 +21,14 @@ mongoose.connect(process.env.MONGO_URL!);
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 const app = express();
+const port = 3000;
+
+app.use(cors({
+    origin: 'http://localhost:5173', 
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
+}));
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
@@ -33,9 +42,13 @@ app.post("/signup", async (req, res) => {
       username: data.username,
       password: data.password,
     });
+    const token = jwt.sign({
+      id: user._id,
+    }, JWT_SECRET);
 
     res.json({
-      id: user._id,
+      message: "User created successfully",
+      token: token,
     });
   } catch (e) {
     return res.status(411).json({ message: "username already exists" });
@@ -79,7 +92,7 @@ app.post("/workflow", authMiddleware, async (req, res) => {
   }
   try {
     const workflow = await WorkflowModel.create({
-      Userid: userid,
+      userid: userid,
       nodes: data.nodes,
       edges: data.edges,
     });
@@ -110,13 +123,18 @@ app.put("/workflow/:workflowId", authMiddleware, async (req, res) => {
   }
 });
 
-app.get("/workflow/workflowId", authMiddleware, async (req, res) => {
+app.get("/workflow/:workflowId", authMiddleware, async (req, res) => {
   const workflow = await WorkflowModel.findById(req.params.workflowId);
-  if (!workflow) {
+  if (!workflow || workflow.userid.toString() !== req.userid) {
     return res.status(404).json({ message: "Workflow not found" });
     return;
   }
   res.json(workflow);
+});
+
+app.get("/workflows", authMiddleware, async (req, res) => {
+  const workflows = await WorkflowModel.find({ userid: req.userid });
+  res.json(workflows);
 });
 
 app.get(
@@ -124,8 +142,8 @@ app.get(
   authMiddleware,
   async (req, res) => {
     const executions = await ExecutionModel.find({
-      workflowId: req.params.workflowId,
-    });
+      workflowId: req.params.workflowId, userId: req.userid
+    }); 
     res.json(executions);
   }
 );

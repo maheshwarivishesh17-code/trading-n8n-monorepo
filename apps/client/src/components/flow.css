@@ -1,0 +1,48 @@
+/* Styling overrides for React Flow nodes, handles, edges, minimap and interactions */
+.react-flow__node {
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(11,22,40,0.08);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+  overflow: visible;
+}
+.react-flow__node:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(11,22,40,0.12);
+}
+.react-flow__handle {
+  opacity: 1 !important;
+  width: 12px !important;
+  height: 12px !important;
+  background: white !important;
+  border: 2px solid #3b82f6 !important;
+}
+.react-flow__edge-path {
+  stroke: #3b82f6 !important;
+}
+.react-flow__edge-path.animated {
+  stroke-dasharray: 6 6;
+  animation: dash 1s linear infinite;
+}
+@keyframes dash {
+  to { stroke-dashoffset: 12; }
+}
+.react-flow__minimap {
+  background: #0b1220 !important;
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.4);
+}
+.react-flow__minimap .react-flow__minimap-mask {
+  background: rgba(2,6,23,0.6);
+}
+.react-flow__minimap .react-flow__minimap-node {
+  fill: #0f172a !important;
+  stroke: #3b82f6 !important;
+}
+
+/* Make nodes more visible on small screens */
+@media (max-width: 768px) {
+  .react-flow__node { border-radius: 10px; }
+}
+
+/* Empty state styling */
+.empty-state-icon { color: #3b82f6 }

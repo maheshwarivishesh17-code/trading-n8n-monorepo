@@ -51,7 +51,7 @@ const PositonSchema = new Schema(
 const NodeDataSchema = new Schema(
   {
     kind: { 
-        type: String, enum: ["trigger", "action"]
+        type: String, enum: ["TRIGGER", "ACTION"]
      },
     metadata: Schema.Types.Mixed,
   },
@@ -79,7 +79,7 @@ const WorkflowNodesSchema = new Schema(
 );
 
 const WorkflowSchema = new Schema({
-  Userid: {
+  userid: {
     type: mongoose.Types.ObjectId,
     ref: "Users",
     required: true,
@@ -102,7 +102,7 @@ const NodesSchema = new Schema({
     },
     type: {
         type: String,
-        enum: ["trigger", "action"],
+        enum: ["TRIGGER", "ACTION"],
         required: true,
     },
     credentialsType:[CredentialsTypeSchema]

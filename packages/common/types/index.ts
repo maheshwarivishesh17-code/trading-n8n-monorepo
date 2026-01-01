@@ -1,5 +1,5 @@
 
-import {z } from "zod";
+import { z } from "zod";
 import { id } from "zod/locales";
 
 export const signupSchema = z.object({
@@ -15,11 +15,12 @@ export const signinSchema = z.object({
 
 export const CreateWorkflowSchema = z.object({
     nodes: z.array(z.object({
-        type: z.string(),
+        nodeId: z.string().optional(),
         data: z.object({
-        kind: z.enum(["action", "trigger"]),
-        metadata: z.any()
+            kind: z.enum(["ACTION", "TRIGGER"]),
+            metadata: z.any()
         }),
+        credentials: z.any(),
         id: z.string(),
         position: z.object({
             x: z.number(),
@@ -34,14 +35,20 @@ export const CreateWorkflowSchema = z.object({
 });
 export const UpdateWorkflowSchema = z.object({
     nodes: z.array(z.object({
+        nodeId: z.string().optional(),
+        data: z.object({
+            kind: z.enum(["ACTION", "TRIGGER"]),
+            metadata: z.any()
+        }),
+        credentials: z.any(),
         id: z.string(),
-        position: z.object({    
+        position: z.object({
             x: z.number(),
             y: z.number()
-        })  
+        })
     })),
     edges: z.array(z.object({
-        id: z.string(), 
+        id: z.string(),
         source: z.string(),
         target: z.string(),
     }))

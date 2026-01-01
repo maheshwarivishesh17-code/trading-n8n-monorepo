@@ -42,6 +42,7 @@ export const TriggerSheet = ({
 }: {
   onSelect: (kind: Nodekind, metadata: NodeMetadata) => void;
 }) => {
+  const [open, setOpen] = useState(true);
   const [metadata, SetMetadata] = useState<
     PriceTriggerMetadata | TimerNodeMetadata
   >({
@@ -51,7 +52,7 @@ export const TriggerSheet = ({
     SUPPORTED_TRIGGERS[0].id
   );
   return (
-    <Sheet open={true}>
+    <Sheet open={open} onOpenChange={(v) => setOpen(v)}>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Select Trigger</SheetTitle>
@@ -142,6 +143,7 @@ export const TriggerSheet = ({
           <Button
             onClick={() => {
               onSelect(selectedTrigger as Nodekind, metadata);
+              setOpen(false);
             }}
             type="submit"
           >

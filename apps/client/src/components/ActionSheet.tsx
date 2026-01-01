@@ -44,11 +44,12 @@ export const ActionSheet = ({
 }: {
   onSelect: (kind: Nodekind, metadata: NodeMetadata) => void
 }) => {
+  const [open, setOpen] = useState(true);
   const [metadata, SetMetadata] = useState<Tradingmetadata | {}>({});
   const [selectedAction, setSelectedAction] = useState(SUPPORTED_ACTIONS[0].id)
 
   return (
-    <Sheet open={true}>
+    <Sheet open={open} onOpenChange={(v) => setOpen(v)}>
       <SheetContent>
         <SheetHeader>
           <SheetTitle>Select Action</SheetTitle>
@@ -123,6 +124,7 @@ export const ActionSheet = ({
         <SheetFooter>
           <Button onClick={() => {
             onSelect(selectedAction as Nodekind, metadata as NodeMetadata);
+            setOpen(false);
           }} type="submit">Create Action</Button>
         </SheetFooter>
       </SheetContent>
