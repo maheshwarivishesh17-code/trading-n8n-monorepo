@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { apiSignup, apiSignin } from '@/lib/http';
 
 export function Auth() {
   const navigate = useNavigate();
@@ -19,47 +20,15 @@ export function Auth() {
     setLoading(true);
 
     try {
-      const endpoint = isLogin ? '/signin' : '/signup';
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
-      const url = `${backendUrl}${endpoint}`;
+      const body = { username, password };
       
-      const body = isLogin 
-        ? { username, password }
-        : { username, password };
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      const contentType = response.headers.get('content-type');
-      
-      if (!response.ok) {
-        let errorMessage = 'Authentication failed';
-        if (contentType?.includes('application/json')) {
-          try {
-            const data = await response.json();
-            errorMessage = data.message || 'Authentication failed';
-          } catch {
-            errorMessage = `Server error: ${response.status} ${response.statusText}`;
-          }
-        } else {
-          errorMessage = `Server error: ${response.status} ${response.statusText}`;
-        }
-        throw new Error(errorMessage);
+      if (isLogin) {
+        const data = await apiSignin(body);
+        navigate('/dashboard');
+      } else {
+        await apiSignup(body);
+        navigate('/dashboard');
       }
-
-      if (!contentType?.includes('application/json')) {
-        throw new Error('Backend is not responding with JSON. Make sure the backend server is running.');
-      }
-
-      const data = await response.json();
-      if (!data.token) {
-        throw new Error('No token received from backend');
-      }
-      localStorage.setItem('token', data.token);
-      navigate('/dashboard');
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'An error occurred';
       if (errorMsg.includes('Failed to fetch') || errorMsg.includes('ERR_')) {

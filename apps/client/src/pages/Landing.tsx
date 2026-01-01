@@ -14,9 +14,11 @@ export function Landing() {
       <main className="flex-1 flex items-center justify-center">
         <div className="text-center max-w-2xl px-6">
           <h2 className="text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600">
-            Automate Your Trading
+            Automate Your Trading Workflows
           </h2>
+
           <p className="text-lg text-white/70 mb-8">
+            
             Design, execute, and monitor trading workflows with a visual workflow builder. Connect triggers and actions to create automated trading strategies.
           </p>
           

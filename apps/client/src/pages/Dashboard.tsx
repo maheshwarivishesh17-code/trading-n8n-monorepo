@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { apiListWorkflows, setAuthToken } from '@/lib/http';
 
 interface Workflow {
   id: string;
@@ -16,22 +17,25 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch workflows from localStorage for now
-    try {
-      const stored = localStorage.getItem('workflows');
-      const items = stored ? JSON.parse(stored) : [];
-      const withStatus = items.map((item: any) => ({
-        ...item,
-        status: 'active' as const,
-        executions: Math.floor(Math.random() * 100),
-        lastRun: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-      }));
-      setWorkflows(withStatus);
-    } catch (error) {
-      console.error('Failed to load workflows:', error);
-    } finally {
-      setLoading(false);
-    }
+    // Fetch workflows from MongoDB backend
+    const fetchWorkflows = async () => {
+      try {
+        const workflows = await apiListWorkflows();
+        const withStatus = workflows.map((item: any) => ({
+          id: item._id,
+          name: item.name || `Workflow ${item._id.slice(0, 6)}`,
+          status: 'active' as const,
+          executions: Math.floor(Math.random() * 100),
+          lastRun: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+        }));
+        setWorkflows(withStatus);
+      } catch (error) {
+        console.error('Failed to load workflows:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWorkflows();
   }, []);
 
   const getStatusColor = (status: Workflow['status']) => {
@@ -39,7 +43,7 @@ export function Dashboard() {
       case 'active': return 'text-green-400';
       case 'inactive': return 'text-gray-400';
       case 'error': return 'text-red-400';
-      default: return 'text-white/60';
+      default: return 'text-black/60';
     }
   };
 
@@ -52,14 +56,14 @@ export function Dashboard() {
         </div>
         <div className="flex gap-3">
           <Link to="/create-workflow">
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">New Workflow</Button>
+            <Button className="bg-blue-600 hover:bg-blue-700"> New Workflow</Button>
           </Link>
           <button
             onClick={() => {
-              localStorage.removeItem('token');
+              setAuthToken(null);
               window.location.href = '/';
             }}
-            className="px-4 py-2 text-sm border border-white/20 rounded hover:bg-white/5"
+            className="px-4 py-2 text-sm border border-black/20 rounded hover:bg-black/5"
           >
             Logout
           </button>
@@ -69,14 +73,14 @@ export function Dashboard() {
       <main className="flex-1 overflow-auto">
         {loading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-white/60">Loading workflows...</div>
+            <div className="text-black/60">Loading workflows...</div>
           </div>
         ) : workflows.length === 0 ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-left h-full">
             <div className="text-center">
               <div className="text-4xl mb-4">📋</div>
-              <h2 className="text-xl font-medium text-white mb-2">No Workflows Yet</h2>
-              <p className="text-white/60 mb-6">Create your first trading workflow to get started</p>
+              <h2 className="text-xl font-medium text-black mb-2">No Workflows Yet</h2>
+              <p className="text-black/60 mb-6">Create your first trading workflow to get started</p>
               <Link to="/create-workflow">
                 <Button className="bg-blue-600 hover:bg-blue-700">Create Workflow</Button>
               </Link>
@@ -87,11 +91,11 @@ export function Dashboard() {
             {workflows.map((workflow) => (
               <div
                 key={workflow.id}
-                className="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-6 hover:border-white/20 transition-all hover:bg-white/10"
+                className="bg-black/5 backdrop-blur border border-black/10 rounded-lg p-6 hover:border-black/20 transition-all hover:bg-black/10"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
-                    <h3 className="font-semibold text-white">{workflow.name}</h3>
+                    <h3 className="font-semibold text-black">{workflow.name}</h3>
                     <div className={`text-sm mt-1 ${getStatusColor(workflow.status)}`}>
                       ● {workflow.status.charAt(0).toUpperCase() + workflow.status.slice(1)}
                     </div>
@@ -99,14 +103,14 @@ export function Dashboard() {
                 </div>
 
                 <div className="space-y-3 mb-6 text-sm">
-                  <div className="flex justify-between text-white/70">
+                  <div className="flex justify-between text-black/70">
                     <span>Executions</span>
-                    <span className="text-white font-medium">{workflow.executions}</span>
+                    <span className="text-black font-medium">{workflow.executions}</span>
                   </div>
                   {workflow.lastRun && (
-                    <div className="flex justify-between text-white/70">
+                    <div className="flex justify-between text-black/70">
                       <span>Last Run</span>
-                      <span className="text-white font-medium">{workflow.lastRun}</span>
+                      <span className="text-black font-medium">{workflow.lastRun}</span>
                     </div>
                   )}
                 </div>

@@ -87,31 +87,32 @@ export function WorkflowExecution() {
   };
 
   return (
-    <div className="w-screen h-screen bg-surface text-foreground flex flex-col">
+    <div className="w-screen h-screen bg-background text-foreground flex flex-col">
       <header className="flex items-center justify-between px-6 py-4 border-b bg-gradient-to-r from-primary/10 via-transparent to-secondary/5">
         <div className="flex items-center gap-4">
-          <Link to={`/workflow/${id}`} className="text-sm text-white/80">← Back</Link>
+          <Link to={`/workflow/${id}`} className="text-sm text-foreground/80">← Back</Link>
           <div>
-            <h1 className="text-xl font-semibold text-white">Workflow Executions</h1>
-            <p className="text-xs text-white/60">ID: {id?.slice(0, 12)}...</p>
+            <h1 className="text-xl font-semibold text-foreground">Workflow Executions</h1>
+            <p className="text-xs text-foreground/60">ID: {id?.slice(0, 12)}...</p>
           </div>
         </div>
         <Link to="/dashboard">
           <Button size="sm" variant="outline">Dashboard</Button>
         </Link>
+        
       </header>
 
       <main className="flex-1 overflow-auto">
         {loading ? (
           <div className="flex items-center justify-center h-full">
-            <div className="text-white/60">Loading executions...</div>
+            <div className="text-foreground/60">Loading executions...</div>
           </div>
         ) : executions.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <div className="text-4xl mb-4">📊</div>
-              <h2 className="text-xl font-medium text-white mb-2">No Executions Yet</h2>
-              <p className="text-white/60">Run your workflow to see execution history</p>
+              <h2 className="text-xl font-medium text-foreground mb-2">No Executions Yet</h2>
+              <p className="text-foreground/60">Run your workflow to see execution history</p>
             </div>
           </div>
         ) : (
@@ -120,7 +121,7 @@ export function WorkflowExecution() {
               {executions.map((execution) => (
                 <div
                   key={execution.id}
-                  className="bg-white/5 backdrop-blur border border-white/10 rounded-lg p-4 hover:border-white/20 transition-all"
+                  className="bg-card backdrop-blur border border-border rounded-lg p-4 hover:border-border/80 transition-all"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -128,20 +129,20 @@ export function WorkflowExecution() {
                         {getStatusBadge(execution.status)}
                       </div>
                       <div>
-                        <div className="text-sm text-white/80">Execution #{execution.id}</div>
-                        <div className="text-xs text-white/50">Started: {execution.startTime}</div>
+                        <div className="text-sm text-foreground/80">Execution #{execution.id}</div>
+                        <div className="text-xs text-foreground/50">Started: {execution.startTime}</div>
                       </div>
                     </div>
                     <div className="text-right text-sm">
                       {execution.duration && (
-                        <div className="text-white/80">Duration: {execution.duration}</div>
+                        <div className="text-foreground/80">Duration: {execution.duration}</div>
                       )}
-                      <div className="text-white/60">{execution.nodeExecutions} nodes executed</div>
+                      <div className="text-foreground/60">{execution.nodeExecutions} nodes executed</div>
                     </div>
                   </div>
 
                   {execution.endTime && (
-                    <div className="text-xs text-white/50 mb-2">
+                    <div className="text-xs text-foreground/50 mb-2">
                       Ended: {execution.endTime}
                     </div>
                   )}
@@ -154,11 +155,11 @@ export function WorkflowExecution() {
                   )}
 
                   <div className="mt-3 flex gap-2">
-                    <button className="text-xs px-2 py-1 rounded border border-white/20 text-white/70 hover:bg-white/5">
+                    <button className="text-xs px-2 py-1 rounded border border-border text-foreground/70 hover:bg-card/80">
                       View Details
                     </button>
                     {execution.status === 'failed' && (
-                      <button className="text-xs px-2 py-1 rounded border border-white/20 text-white/70 hover:bg-white/5">
+                      <button className="text-xs px-2 py-1 rounded border border-border text-foreground/70 hover:bg-card/80">
                         Retry
                       </button>
                     )}

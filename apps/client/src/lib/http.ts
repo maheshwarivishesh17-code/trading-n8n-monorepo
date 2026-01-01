@@ -52,8 +52,9 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export async function apiSignup(body: { username: string; password: string}): Promise<IdResponse> {
-    const res = await api.post<IdResponse>('/signup', body);
+export async function apiSignup(body: { username: string; password: string}): Promise<SigninResponse> {
+    const res = await api.post<SigninResponse>('/signup', body);
+    setAuthToken(res.data.token);
     return res.data;
 }
 
