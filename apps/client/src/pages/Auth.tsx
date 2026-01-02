@@ -26,7 +26,7 @@ export function Auth() {
     }
     try {
       const body = { username, password };
-      
+
       if (isLogin) {
         const data = await apiSignin(body);
         navigate('/dashboard');
@@ -47,7 +47,7 @@ export function Auth() {
   };
 
   return (
-    <div className="w-screen h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-foreground flex flex-col">
+    <div className="w-screen h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex flex-col">
       <header className="flex items-center px-6 py-4 border-b border-white/10">
         <Link to="/" className="text-2xl font-bold text-white">Trading Bot</Link>
       </header>
