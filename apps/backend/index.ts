@@ -16,13 +16,13 @@ import {
 } from "db/client";
 import { authMiddleware } from "./middleware";
 
-
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "123123adskkads");
 
 console.log("Mongo URL:", process.env.MONGO_URL);
 mongoose.connect(process.env.MONGO_URL!);
 
 const app = express();
+const port = 3000;
 
 app.use(cors({
     origin: 'http://localhost:5173', 
@@ -42,6 +42,9 @@ app.post("/signup", async (req, res) => {
       username: data.username,
       password: data.password,
     });
+    const token = jwt.sign({
+      id: user._id,
+    }, JWT_SECRET);
 
     const token = await new SignJWT({ id: user._id.toString() })
       .setProtectedHeader({ alg: 'HS256' }) 
@@ -126,6 +129,12 @@ app.put("/workflow/:workflowId", authMiddleware, async (req, res) => {
   } catch (e) {
     res.status(411).json({ message: "Failed to update workflow" });
   }
+  res.json(workflow);
+});
+
+app.get("/workflows", authMiddleware, async (req, res) => {
+  const workflows = await WorkflowModel.find({ userid: req.userid });
+  res.json(workflows);
 });
 
 app.get("/workflow/:workflowId", authMiddleware, async (req, res) => {
