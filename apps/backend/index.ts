@@ -7,7 +7,7 @@ import {
   signinSchema,
   signupSchema,
   UpdateWorkflowSchema,
-} from "../../packages/common/types/index.ts";
+} from "../../packages/common/types/index.js";
 import {
   ExecutionModel,
   NodesModel,

@@ -1,6 +1,5 @@
 
 import { z } from "zod";
-import { id } from "zod/locales";
 
 export const signupSchema = z.object({
     username: z.string().min(3).max(100),
