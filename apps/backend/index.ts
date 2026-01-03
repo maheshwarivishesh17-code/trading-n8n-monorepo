@@ -1,23 +1,25 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+import { SignJWT } from "jose"; 
 import {
   CreateWorkflowSchema,
   signinSchema,
   signupSchema,
   UpdateWorkflowSchema,
-} from "../../packages/common/types";
+} from "../../packages/common/types/index.js";
 import {
   ExecutionModel,
   NodesModel,
   UserModel,
   WorkflowModel,
-} from "db/client";
-import jwt from "jsonwebtoken";
-import { authMiddleware } from "./middleware";
+} from "../../packages/db/index.js";
+import { authMiddleware } from "./middleware.js";
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "123123adskkads");
+
 console.log("Mongo URL:", process.env.MONGO_URL);
 mongoose.connect(process.env.MONGO_URL!);
-const JWT_SECRET = process.env.JWT_SECRET!;
 
 const app = express();
 const port = 3000;
@@ -34,16 +36,17 @@ app.post("/signup", async (req, res) => {
   const { success, data } = signupSchema.safeParse(req.body);
   if (!success) {
     return res.status(403).json({ message: "incorrect inputs" });
-    return;
   }
   try {
     const user = await UserModel.create({
       username: data.username,
       password: data.password,
     });
-    const token = jwt.sign({
-      id: user._id,
-    }, JWT_SECRET);
+
+    const token = await new SignJWT({ id: user._id.toString() })
+      .setProtectedHeader({ alg: 'HS256' }) 
+      .setExpirationTime('24h')             
+      .sign(JWT_SECRET);
 
     res.json({
       message: "User created successfully",
@@ -58,20 +61,20 @@ app.post("/signin", async (req, res) => {
   const { success, data } = signinSchema.safeParse(req.body);
   if (!success) {
     return res.status(403).json({ message: "incorrect inputs" });
-    return;
   }
   try {
     const user = await UserModel.findOne({
       username: data.username,
       password: data.password,
     });
+    
     if (user) {
-      const token = jwt.sign(
-        {
-          id: user._id,
-        },
-        JWT_SECRET
-      );
+  
+      const token = await new SignJWT({ id: user._id.toString() })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setExpirationTime('24h')
+        .sign(JWT_SECRET);
+        
       res.json({ id: user._id, token });
     } else {
       return res.status(403).json({ message: "Incorrect Credentials" });
@@ -83,8 +86,9 @@ app.post("/signin", async (req, res) => {
 });
 
 app.post("/workflow", authMiddleware, async (req, res) => {
-  const userid = req.userid!;
+  const userid = req.userid!; 
   console.log(userid);
+  
   const { success, data } = CreateWorkflowSchema.safeParse(req.body);
   if (!success) {
     res.status(403).json({ message: "Incorrect inputs" });
@@ -101,6 +105,7 @@ app.post("/workflow", authMiddleware, async (req, res) => {
     res.status(411).json({ message: "Failed to create workflow" });
   }
 });
+
 app.put("/workflow/:workflowId", authMiddleware, async (req, res) => {
   const { success, data } = UpdateWorkflowSchema.safeParse(req.body);
   if (!success) {
@@ -121,13 +126,19 @@ app.put("/workflow/:workflowId", authMiddleware, async (req, res) => {
   } catch (e) {
     res.status(411).json({ message: "Failed to update workflow" });
   }
+
+});
+
+app.get("/workflows", authMiddleware, async (req, res) => {
+  const workflows = await WorkflowModel.find({ userid: req.userid });
+  res.json(workflows);
 });
 
 app.get("/workflow/:workflowId", authMiddleware, async (req, res) => {
   const workflow = await WorkflowModel.findById(req.params.workflowId);
+  
   if (!workflow || workflow.userid.toString() !== req.userid) {
     return res.status(404).json({ message: "Workflow not found" });
-    return;
   }
   res.json(workflow);
 });

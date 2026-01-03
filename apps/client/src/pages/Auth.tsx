@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -28,7 +28,7 @@ export function Auth() {
       const body = { username, password };
 
       if (isLogin) {
-        const data = await apiSignin(body);
+         await apiSignin(body);
         navigate('/dashboard');
       } else {
         await apiSignup(body);

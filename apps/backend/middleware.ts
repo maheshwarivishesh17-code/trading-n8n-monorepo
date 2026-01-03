@@ -1,16 +1,32 @@
-import type { NextFunction } from "express";
-const JWT_SECRET = process.env.JWT_SECRET!;
-import jwt, {  type JwtPayload } from "jsonwebtoken";
-import type { Request, Response } from "express";
 
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
-  const header = req.headers["authorization"] as string;
-    try {
-        console.log( header);
-        const response= jwt.verify(header, JWT_SECRET) as JwtPayload;
-        req.userid = response.id;
-        next();
-    } catch (e) {   
-        return res.status(403).json({ message: "You are not logged in" });
+import type { NextFunction, Request, Response } from "express";
+import { jwtVerify } from "jose";
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "123123adskkads");
+
+export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
+  const authHeader = req.headers["authorization"];
+
+  if (!authHeader) {
+    return res.status(403).json({ message: "You are not logged in" });
+  }
+
+  try {
+    const token = authHeader.startsWith("Bearer ") 
+      ? authHeader.split(" ")[1] 
+      : authHeader;
+
+    const { payload } = await jwtVerify(token as string, JWT_SECRET);
+    
+    if (payload.id) {
+      req.userid = payload.id as string;
+      next();
+    } else {
+      return res.status(403).json({ message: "Invalid token payload" });
     }
+
+  } catch (e) {
+    console.error("JWT Verify Error:", e);
+    return res.status(403).json({ message: "You are not logged in" });
+  }
 }

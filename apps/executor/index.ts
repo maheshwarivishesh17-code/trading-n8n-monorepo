@@ -32,8 +32,8 @@ async function main() {
               });
               await execute(workflow.nodes,workflow.edges);
 
-              execution.endTime=new Date()
-              execution.status="SUCCESS"
+              execution.endtime=new Date()
+              execution.status="success"
               await execution.save()
             }
      

@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "exports": {
-    "./types": "./index.ts"
+    "./types": "./index.js"
   },
   "devDependencies": {
     "@types/bun": "latest"
