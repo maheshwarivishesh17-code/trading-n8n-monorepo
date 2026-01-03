@@ -74,6 +74,7 @@
     "apps/executor": {
       "name": "executor",
       "dependencies": {
+        "@types/node": "^25.0.3",
         "db": "*",
         "mongoose": "^9.1.1",
       },
